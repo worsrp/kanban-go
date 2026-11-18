@@ -1,3 +1,37 @@
+# Compiled Go binaries & test outputs
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+/backend/bin/
+/backend/main
+
+# Air live-reload temporary build folder
+/backend/tmp/
+
+# Go workspace file (if generated locally)
+go.work
+go.work.sum
+
+# Local PostgreSQL data directory (Conda initdb)
+.pgdata/
 logfile
-.pgdata
+
+# Environment variables & local secrets
+.env
+.env.*
+!.env.example
+
+# Frontend (Node / Vite / Vue)
+node_modules/
+/frontend/dist/
+*.local
+
+# IDE & OS files
 .DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
