@@ -81,6 +81,16 @@ func (q *Queries) CreateColumn(ctx context.Context, arg CreateColumnParams) (Col
 	return i, err
 }
 
+const deleteCard = `-- name: DeleteCard :exec
+DELETE FROM cards
+WHERE id = $1
+`
+
+func (q *Queries) DeleteCard(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteCard, id)
+	return err
+}
+
 const getBoard = `-- name: GetBoard :one
 SELECT id, title, created_at FROM boards
 WHERE id = $1 LIMIT 1
@@ -174,6 +184,33 @@ type MoveCardParams struct {
 
 func (q *Queries) MoveCard(ctx context.Context, arg MoveCardParams) (Card, error) {
 	row := q.db.QueryRow(ctx, moveCard, arg.ID, arg.ColumnID, arg.Position)
+	var i Card
+	err := row.Scan(
+		&i.ID,
+		&i.ColumnID,
+		&i.Title,
+		&i.Description,
+		&i.Position,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateCard = `-- name: UpdateCard :one
+UPDATE cards
+SET title = $2, description = $3, updated_at = NOW()
+WHERE id = $1
+RETURNING id, column_id, title, description, position, updated_at
+`
+
+type UpdateCardParams struct {
+	ID          pgtype.UUID `json:"id"`
+	Title       string      `json:"title"`
+	Description string      `json:"description"`
+}
+
+func (q *Queries) UpdateCard(ctx context.Context, arg UpdateCardParams) (Card, error) {
+	row := q.db.QueryRow(ctx, updateCard, arg.ID, arg.Title, arg.Description)
 	var i Card
 	err := row.Scan(
 		&i.ID,
