@@ -33,3 +33,13 @@ UPDATE cards
 SET column_id = $2, position = $3, updated_at = NOW()
 WHERE id = $1
 RETURNING *;
+
+-- name: UpdateCard :one
+UPDATE cards
+SET title = $2, description = $3, updated_at = NOW()
+WHERE id = $1
+RETURNING *;
+
+-- name: DeleteCard :exec
+DELETE FROM cards
+WHERE id = $1;
